@@ -10,7 +10,7 @@ var dbhelper = require('./dynamodbHelper');
  */
 
 // --------------- Some uesful function -----------------------------------------
-function isEmpty(obj){
+function isEmpty(obj) {
     return Object.keys(obj).length === 0;
 }
 
@@ -72,7 +72,7 @@ function getWelcomeResponse(callback) {
         'How can I help you';
     // If the user either does not reply to the welcome message or says something that is not
     // understood, they will be prompted again with this text.
-    const repromptText = 'how can I help you '  ;
+    const repromptText = 'how can I help you ';
     const shouldEndSession = false;
 
     callback(sessionAttributes,
@@ -94,7 +94,7 @@ function handleIntentRequest(intentRequest, session, callback) {
 
     console.log('state:' + intentRequest.dialogState)
     console.log('intentRequest: ' + JSON.stringify(intentRequest))
-    if ( intentRequest.dialogState !== "COMPLETED") {
+    if (intentRequest.dialogState !== "COMPLETED") {
 
         callback({}, buildDialogDelegateResponse());
 
@@ -102,23 +102,22 @@ function handleIntentRequest(intentRequest, session, callback) {
 
         const slots = intentRequest.intent.slots;
         let queryHashKey = intentRequest.intent.name;
-        
+
         if (!isEmpty(slots)) {
             console.log('check slots');
             // Need slots
             if (slots instanceof Array) {
                 slots.forEach(function (element, index, arr) {
-                    let slotsValue = element[Object.keys(element)].value.replace(/ /g,"");
+                    let slotsValue = element[Object.keys(element)].value.replace(/ /g, "");
                     queryHashKey = queryHashKey + `_${slotsValue}`;
                 })
             }
-            else 
-            {   let slotsValue = slots[Object.keys(slots)].value;
-                if( slotsValue !== 'undefined')               
-                {
-                    queryHashKey = queryHashKey + `_${slotsValue.replace(/ /g,"")}`;
-                }   
-            }         
+            else {
+                let slotsValue = slots[Object.keys(slots)].value;
+                if (slotsValue !== 'undefined') {
+                    queryHashKey = queryHashKey + `_${slotsValue.replace(/ /g, "")}`;
+                }
+            }
 
             console.log(queryHashKey)
         }
@@ -136,7 +135,34 @@ function handleIntentRequest(intentRequest, session, callback) {
     }
 }
 
- 
+function handleIntentRequestForAccountLinking(intentRequest, session, callback) {
+
+    var handler = require('../amazonAccountHelper');
+    handler(session, function (response, body) {
+
+        if (response.statusCode == 200) {
+
+            var profile = JSON.parse(body);
+            console.log(profile);
+            const cardTitle = intentRequest.intent.name;
+            dbhelper(queryHashKey, function (res) {
+                let speechOutput = res;
+                let reprompt = res;
+                console.log(reprompt);
+                //self.emit(':tell',speechOutput, reprompt);
+                callback({},
+                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+            })
+
+
+        } else {
+
+            console.log("Hello, I can't connect to Amazon Profile Service right now, try again later");
+
+        }
+    });
+}
+
 // --------------- Events -----------------------
 
 /**
@@ -170,9 +196,9 @@ function onIntent(intentRequest, session, callback) {
         getWelcomeResponse(callback);
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
         handleSessionEndRequest(callback);
-    } else 
+    } else
         handleIntentRequest(intentRequest, session, callback);
-    
+
 }
 
 /**
@@ -191,7 +217,7 @@ function onSessionEnded(sessionEndedRequest, session) {
 // etc.) The JSON body of the request is provided in the event parameter.
 exports.handler = (event, context, callback) => {
     try {
- 
+
         console.log(`alexa request=${JSON.stringify(event)}`);
         /**
          * Uncomment this if statement and populate with your skill's application ID to
