@@ -1,0 +1,247 @@
+{
+  "intents": [
+    {
+      "name": "AMAZON.CancelIntent",
+      "samples": []
+    },
+    {
+      "name": "AMAZON.HelpIntent",
+      "samples": []
+    },
+    {
+      "name": "AMAZON.StopIntent",
+      "samples": []
+    },
+    {
+      "name": "FaQToBackupSystem",
+      "samples": [
+        "how to back up my system",
+        "how to create a USB recovery drive",
+        "How do I create a USB recovery drive using Acer Care Center"
+      ],
+      "slots": []
+    },
+    {
+      "name": "FaQToChangeKeyboardLayout",
+      "samples": [
+        "How do I change the keyboard layout",
+        "How to change the keyboard layout",
+        "How to change my keyboard layout",
+        "I wanna change my keyboard layout so how can i do",
+        "How can I change my keyboard layout"
+      ],
+      "slots": []
+    },
+    {
+      "name": "FaQToLaunchBootMenu",
+      "samples": [
+        "how to open the boot menu",
+        "how to get the Boot Menu to work",
+        "Why can not I get the Boot Menu to work",
+        "tell me how to get the Boot Menu to work",
+        "tell me how to launch the boot menu",
+        "tell me how to open the boot menu"
+      ],
+      "slots": []
+    },
+    {
+      "name": "FaQToResetSystem",
+      "samples": [
+        "how to Reset Windows if I have forgotten my password",
+        "I wanna reset my system but I have forgot my password"
+      ],
+      "slots": []
+    },
+    {
+      "name": "FaQToResetToFactorySetting",
+      "samples": [
+        "how to reset my system to factory default setting",
+        "How do I reset my PC to factory default settings using Acer Care Center",
+        "How to reset my system to factory default settings using Acer Care Center"
+      ],
+      "slots": []
+    },
+    {
+      "name": "FaQToSetSecurityBoot",
+      "samples": [
+        "How to Enable Secure Boot",
+        "How to Disable Secure Boot",
+        "How do I enable or disable Secure Boot on my computer",
+        "How do I disable Secure Boot on my notebook",
+        "How do I disable Secure Boot on my desktop",
+        "How do I disable Secure Boot on my netbook",
+        "How do I enable Secure Boot on my notebook",
+        "How do I enable Secure Boot on my desktop",
+        "How do I enable Secure Boot on my {platform}",
+        "I want to enable Secure Boot on my {platform}"
+      ],
+      "slots": [
+        {
+          "name": "platform",
+          "type": "platform",
+          "samples": [
+            "I use notebook",
+            "I use desktop",
+            "My computer is notebook"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GetRepairCenter",
+      "samples": [
+        "where is the repair center in {location}",
+        "give me the nearest repair center in {location}",
+        "tell me the repair center in {location}"
+      ],
+      "slots": [
+        {
+          "name": "location",
+          "type": "Location",
+          "samples": [
+            "l am living in {location}",
+            "I am in {location}"
+          ]
+        }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "Location",
+      "values": [
+        {
+          "id": "1",
+          "name": {
+            "value": "New York",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "2",
+          "name": {
+            "value": "Hong Kong",
+            "synonyms": []
+          }
+        },
+        {
+          "id": "3",
+          "name": {
+            "value": "Tokyo",
+            "synonyms": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "platform",
+      "values": [
+        {
+          "id": "3",
+          "name": {
+            "value": "desktop",
+            "synonyms": [
+              "desktop",
+              "PC"
+            ]
+          }
+        },
+        {
+          "id": "2",
+          "name": {
+            "value": "notebook",
+            "synonyms": [
+              "notebook",
+              "laptop"
+            ]
+          }
+        },
+        {
+          "id": "1",
+          "name": {
+            "value": "netbook",
+            "synonyms": [
+              "net book",
+              "netbook",
+              "pad",
+              "tablet"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "prompts": [
+    {
+      "id": "Elicit.Intent-FaQToSetSecurityBoot.IntentSlot-platform",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "what is your platform"
+        }
+      ]
+    },
+    {
+      "id": "Elicit.Intent-GetRepairCenter.IntentSlot-location",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "where are you"
+        },
+        {
+          "type": "PlainText",
+          "value": "where are you living"
+        },
+        {
+          "type": "PlainText",
+          "value": "please tell me your location"
+        },
+        {
+          "type": "PlainText",
+          "value": "Which city are you in"
+        }
+      ]
+    }
+  ],
+  "dialog": {
+    "version": "1.0",
+    "intents": [
+      {
+        "name": "FaQToSetSecurityBoot",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "platform",
+            "type": "platform",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-FaQToSetSecurityBoot.IntentSlot-platform"
+            }
+          }
+        ]
+      },
+      {
+        "name": "GetRepairCenter",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "location",
+            "type": "Location",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-GetRepairCenter.IntentSlot-location"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
