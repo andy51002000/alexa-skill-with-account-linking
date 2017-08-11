@@ -144,20 +144,28 @@ function handleIntentRequestForAccountLinking(intentRequest, session, callback) 
 
             var profile = JSON.parse(body);
             console.log(profile);
+            const queryHashKey = profile.email;
             const cardTitle = intentRequest.intent.name;
+
+            var dbhelper = require('../dynamodbHelper');
             dbhelper(queryHashKey, function (res) {
+                const res =res[0].S;
+ 
                 let speechOutput = res;
                 let reprompt = res;
                 console.log(reprompt);
-                //self.emit(':tell',speechOutput, reprompt);
+
                 callback({},
                     buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
-            })
+            });
+
 
 
         } else {
 
             console.log("Hello, I can't connect to Amazon Profile Service right now, try again later");
+            callback({},
+                buildSpeechletResponse('cardTitle', 'account error', 'account error', true));
 
         }
     });
@@ -196,7 +204,10 @@ function onIntent(intentRequest, session, callback) {
         getWelcomeResponse(callback);
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
         handleSessionEndRequest(callback);
-    } else
+    } else if (intentName === 'TurnOnDisplay'){
+        handleIntentRequestForAccountLinking(intentRequest, session, callback);
+    }
+     else
         handleIntentRequest(intentRequest, session, callback);
 
 }

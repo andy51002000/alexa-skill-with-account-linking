@@ -1,6 +1,6 @@
 LAMBDA_FUNCTION_NAME=alexawithiot
 
-git add .
+git add -A
 git commit -m "undate" 
 git push -u origin master
 
