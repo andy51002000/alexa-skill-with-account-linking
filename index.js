@@ -137,7 +137,7 @@ function handleIntentRequest(intentRequest, session, callback) {
 
 function handleIntentRequestForAccountLinking(intentRequest, session, callback) {
 
-    var handler = require('../amazonAccountHelper');
+    var handler = require('./amazonAccountHelper');
     handler(session, function (response, body) {
 
         if (response.statusCode == 200) {
@@ -147,7 +147,7 @@ function handleIntentRequestForAccountLinking(intentRequest, session, callback) 
             const queryHashKey = profile.email;
             const cardTitle = intentRequest.intent.name;
 
-            var dbhelper = require('../dynamodbHelper');
+            var dbhelper = require('./dynamodbHelper');
             dbhelper(queryHashKey, function (data) {
                 const res =data[0].S;
  
