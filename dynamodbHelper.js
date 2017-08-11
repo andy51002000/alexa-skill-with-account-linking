@@ -1,8 +1,8 @@
 var AWS = require("aws-sdk");
 var dynamodb = new AWS.DynamoDB();
 
-var getItem = {
-    function(queryHashKey, callback) {
+var getItem =
+    function (queryHashKey, callback) {
 
         var params = {
 
@@ -30,7 +30,7 @@ var getItem = {
 
 
     }
-}
+
 
 module.exports = getItem;
 
