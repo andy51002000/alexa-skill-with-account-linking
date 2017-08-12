@@ -21,7 +21,7 @@ var getItem =
         console.log(`Get the answer from database with particular slot`);
         dynamodb.query(params, function (err, data) {
             if (err) console.log(err, err.stack); // an error occurred
-            else console.log(data);           // successful response
+            else console.log(JSON.stringify(data));           // successful response
 
             callback(data.Items[0].devs.S);
 
