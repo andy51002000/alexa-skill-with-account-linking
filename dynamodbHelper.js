@@ -23,7 +23,7 @@ var getItem =
             if (err) console.log(err, err.stack); // an error occurred
             else console.log(JSON.stringify(data));           // successful response
 
-            callback(data.Items[0].devs.S);
+            callback(data.Items[0].devs);
 
         })
 
