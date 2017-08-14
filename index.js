@@ -1,5 +1,7 @@
 'use strict';
 var dbhelper = require('./dynamodbHelper');
+var iotHelper = require('./awsIoTHelper');
+
 /**
  * This sample demonstrates a simple skill built with the Amazon Alexa Skills Kit.
  * The Intent Schema, Custom Slots, and Sample Utterances for this skill, as well as
@@ -125,6 +127,7 @@ function handleIntentRequest(intentRequest, session, callback) {
 
         const cardTitle = intentRequest.intent.name;
         dbhelper(queryHashKey, function (res) {
+
             let speechOutput = res;
             let reprompt = res;
             console.log(reprompt);
@@ -149,14 +152,18 @@ function handleIntentRequestForAccountLinking(intentRequest, session, callback) 
 
             var dbhelper = require('./dynamodbHelper');
             dbhelper(queryHashKey, function (res) {
-                console.log('revice:' +JSON.stringify(res));     
+                console.log('revice:' + JSON.stringify(res));
                 const dev = res.L[0].S;
                 let speechOutput = dev;
                 let reprompt = dev;
                 console.log(reprompt);
 
-                callback({},
-                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                iotHelper.turnOff(dev, function () {
+                    callback({},
+                        buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                });
+
+
             });
 
 
@@ -204,10 +211,10 @@ function onIntent(intentRequest, session, callback) {
         getWelcomeResponse(callback);
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
         handleSessionEndRequest(callback);
-    } else if (intentName === 'TurnOnDisplay'){
+    } else if (intentName === 'TurnOnDisplay') {
         handleIntentRequestForAccountLinking(intentRequest, session, callback);
     }
-     else
+    else
         handleIntentRequest(intentRequest, session, callback);
 
 }
