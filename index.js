@@ -153,7 +153,8 @@ function handleIntentRequestForAccountLinking(intentRequest, session, callback) 
             var dbhelper = require('./dynamodbHelper');
             dbhelper(queryHashKey, function (res) {
                 console.log('revice:' + JSON.stringify(res));
-                const dev = res.Item.devs[0];
+                const dev = res.Item.devs instanceof Array? res.Item.devs[0] : res.Item.devs;
+                
                 let speechOutput = dev;
                 let reprompt = dev;
                 console.log(reprompt);
