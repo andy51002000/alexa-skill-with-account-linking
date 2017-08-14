@@ -138,7 +138,7 @@ function handleIntentRequest(intentRequest, session, callback) {
     }
 }
 
-function handleIntentRequestForAccountLinking(intentRequest, session, callback) {
+function handleIntentRequestDevControl(state, intentRequest, session, callback) {
 
     var handler = require('./amazonAccountHelper');
     handler(session, function (response, body) {
@@ -153,16 +153,23 @@ function handleIntentRequestForAccountLinking(intentRequest, session, callback) 
             var dbhelper = require('./dynamodbHelper');
             dbhelper(queryHashKey, function (res) {
                 console.log('revice:' + JSON.stringify(res));
-                const dev = res.Item.devs instanceof Array? res.Item.devs[0] : res.Item.devs;
-                
+                const dev = res.Item.devs instanceof Array ? res.Item.devs[0] : res.Item.devs;
+
                 let speechOutput = dev;
                 let reprompt = dev;
                 console.log(reprompt);
+                if (state === 'on') {
+                    iotHelper.turnOn(dev, function () {
+                        callback({},
+                            buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                    });
+                } else {
+                    iotHelper.turnOff(dev, function () {
+                        callback({},
+                            buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                    });
+                }
 
-                iotHelper.turnOff(dev, function () {
-                    callback({},
-                        buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
-                });
 
 
             });
@@ -213,7 +220,9 @@ function onIntent(intentRequest, session, callback) {
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
         handleSessionEndRequest(callback);
     } else if (intentName === 'TurnOnDisplay') {
-        handleIntentRequestForAccountLinking(intentRequest, session, callback);
+        handleIntentRequestDevControl('on', intentRequest, session, callback);
+    } else if (intentName === 'TurnOffDisplay') {
+        handleIntentRequestDevControl('off', intentRequest, session, callback);
     }
     else
         handleIntentRequest(intentRequest, session, callback);
