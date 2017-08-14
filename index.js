@@ -147,7 +147,7 @@ function handleIntentRequestForAccountLinking(intentRequest, session, callback) 
 
             var profile = JSON.parse(body);
             console.log(profile);
-            const queryHashKey = profile.id;
+            const queryHashKey = profile.user_id;
             const cardTitle = intentRequest.intent.name;
 
             var dbhelper = require('./dynamodbHelper');
