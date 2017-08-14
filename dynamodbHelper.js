@@ -17,7 +17,7 @@ var getItem =
             } else {
                 console.log("Success", data.Item);
             }
-            callback(data.Items[0].devs);
+            callback(data.devs);
         });
 
 
