@@ -153,6 +153,12 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
             var dbhelper = require('./dynamodbHelper');
             dbhelper(queryHashKey, function (res) {
                 console.log('receive:' + JSON.stringify(res));
+                if(isEmpty(res)){
+                    callback({},
+                        buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));                   
+                }    
+
+
                 const dev = res.Item.devs instanceof Array ? res.Item.devs[0] : res.Item.devs;
                 if( dev === 'undefined'){
                     callback({},
