@@ -154,6 +154,7 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
             dbhelper(queryHashKey, function (res) {
                 console.log('receive:' + JSON.stringify(res));
                 if(isEmpty(res)){
+                    console.log('empty response');
                     callback({},
                         buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));                   
                 }    
