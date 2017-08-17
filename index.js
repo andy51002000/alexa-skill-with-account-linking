@@ -164,6 +164,7 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
                 if( dev === 'undefined'){
                     callback({},
                         buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
+                        return;
                 }
 
                 let speechOutput = dev;
