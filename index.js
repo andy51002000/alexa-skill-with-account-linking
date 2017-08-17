@@ -16,7 +16,28 @@ function isEmpty(obj) {
     return Object.keys(obj).length === 0;
 }
 
+function makeQueryHashKey(initValue, slots) {
+    let queryHashKey = initValue;
+    if (!isEmpty(slots)) {
+        console.log('check slots');
+        // Need slots
+        if (slots instanceof Array) {
+            slots.forEach(function (element, index, arr) {
+                let slotsValue = element[Object.keys(element)].value.replace(/ /g, "");
+                queryHashKey = queryHashKey + `_${slotsValue}`;
+            })
+        }
+        else {
+            let slotsValue = slots[Object.keys(slots)].value;
+            if (slotsValue !== 'undefined') {
+                queryHashKey = queryHashKey + `_${slotsValue.replace(/ /g, "")}`;
+            }
+        }
 
+        console.log(queryHashKey)
+    }
+    return queryHashKey
+}
 
 // --------------- Helpers that build all of the responses -----------------------
 
@@ -138,65 +159,94 @@ function handleIntentRequest(intentRequest, session, callback) {
     }
 }
 
-function handleIntentRequestDevControl(state, intentRequest, session, callback) {
+function findDevice(devs,name){
 
-    var handler = require('./amazonAccountHelper');
-    handler(session, function (response, body) {
-
-        if (response.statusCode == 200) {
-
-            var profile = JSON.parse(body);
-            console.log(profile);
-            const queryHashKey = profile.user_id;
-            const cardTitle = intentRequest.intent.name;
-
-            var dbhelper = require('./dynamodbHelper');
-            dbhelper(queryHashKey, function (res) {
-                console.log('receive:' + JSON.stringify(res));
-                if(isEmpty(res)){
-                    console.log('empty response');
-                    callback({},
-                        buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
-                        return false;                   
-                }    
-
-
-                const dev = res.Item.devs instanceof Array ? res.Item.devs[0] : res.Item.devs;
-                if( dev === 'undefined'){
-                    callback({},
-                        buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
-                        
-                }
-
-                let speechOutput = dev;
-                let reprompt = dev;
-                console.log(reprompt);
-                if (state === 'on') {
-                    iotHelper.turnOn(dev, function () {
-                        callback({},
-                            buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
-                    });
-                } else {
-                    iotHelper.turnOff(dev, function () {
-                        callback({},
-                            buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
-                    });
-                }
-
-
-
-            });
-
-
-
-        } else {
-
-            console.log("Hello, I can't connect to Amazon Profile Service right now, try again later");
-            callback({},
-                buildSpeechletResponse('cardTitle', 'account error', 'account error', true));
-
+    devs.forEach(function (element, index, arr) {
+        if(element.name === name ){
+            return element.sn;
         }
     });
+
+}
+
+function handleIntentRequestDevControl(state, intentRequest, session, callback) {
+
+    console.log('state:' + intentRequest.dialogState)
+    console.log('intentRequest: ' + JSON.stringify(intentRequest))
+    if (intentRequest.dialogState !== "COMPLETED") {
+
+        callback({}, buildDialogDelegateResponse());
+
+    } else {
+
+        const devName = intentRequest.intent.slots.device.value;
+        var handler = require('./amazonAccountHelper');
+        handler(session, function (response, body) {
+
+            if (response.statusCode == 200) {
+
+                //get user id
+                var profile = JSON.parse(body);
+                console.log(profile);
+                const queryHashKey = profile.user_id;
+                const cardTitle = intentRequest.intent.name;
+
+                //query dynamoDb by id to get device
+                var dbhelper = require('./dynamodbHelper');
+                dbhelper(queryHashKey, function (res) {
+                    console.log('receive:' + JSON.stringify(res));
+
+                    // check data
+                    if (isEmpty(res)) {
+                        console.log('empty response');
+                        callback({},
+                            buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
+                        return false;
+                    }
+
+
+                    //const dev = res.Item.devs instanceof Array ? res.Item.devs[0] : res.Item.devs;
+                    var dev = findDevice(devs,devName);
+                    if (dev === undefined) {
+                        callback({},
+                            buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
+
+                    }
+
+                    let speechOutput = dev;
+                    let reprompt = dev;
+                    console.log(reprompt);
+                    if (state === 'on') {
+                        iotHelper.turnOn(dev, function () {
+                            callback({},
+                                buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                        });
+                    } else {
+                        iotHelper.turnOff(dev, function () {
+                            callback({},
+                                buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                        });
+                    }
+
+
+
+                });
+
+
+
+            } else {
+
+                console.log("Hello, I can't connect to Amazon Profile Service right now, try again later");
+                callback({},
+                    buildSpeechletResponse('cardTitle', 'account error', 'account error', true));
+
+            }
+        });
+    }
+
+
+
+
 }
 
 // --------------- Events -----------------------
