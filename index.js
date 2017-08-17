@@ -206,7 +206,7 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
 
 
                     //const dev = res.Item.devs instanceof Array ? res.Item.devs[0] : res.Item.devs;
-                    var dev = findDevice(devs,devName);
+                    var dev = findDevice(res.Item.devs,devName);
                     if (dev === undefined) {
                         callback({},
                             buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
