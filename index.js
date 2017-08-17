@@ -156,7 +156,8 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
                 if(isEmpty(res)){
                     console.log('empty response');
                     callback({},
-                        buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));                   
+                        buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
+                        return false;                   
                 }    
 
 
@@ -164,7 +165,7 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
                 if( dev === 'undefined'){
                     callback({},
                         buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
-                        return;
+                        
                 }
 
                 let speechOutput = dev;
