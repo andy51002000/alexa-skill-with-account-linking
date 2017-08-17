@@ -161,13 +161,15 @@ function handleIntentRequest(intentRequest, session, callback) {
 
 function findDevice(devs,name){
 
+    let sn;
     devs.forEach(function (element, index, arr) {
         console.log(element);
         if(element.name === name ){
             console.log(`find ${name}`);
-            return element.sn;
+            sn = element.sn;
         }
     });
+    return sn;
 
 }
 
