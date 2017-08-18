@@ -162,7 +162,7 @@ function handleIntentRequest(intentRequest, session, callback) {
 function findDevice(devs,name){
 
     let sn;
-    devs.forEach(function (element, index, arr) {
+    devs.ever(function (element, index, arr) {
         console.log(element);
         if(element.name === name ){
             console.log(`find ${name}`);
@@ -197,7 +197,8 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
 
                 //query dynamoDb by id to get device
                 var dbhelper = require('./dynamodbHelper');
-                dbhelper(queryHashKey, function (res) {
+                var Users = new dbhelper('Users', queryHashKey);
+                Users.find(function (res) {
                     console.log('receive:' + JSON.stringify(res));
 
                     // check data
@@ -208,13 +209,11 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
                         return false;
                     }
 
-
                     //const dev = res.Item.devs instanceof Array ? res.Item.devs[0] : res.Item.devs;
                     var dev = findDevice(res.Item.devs,devName);
                     if (dev === undefined) {
                         callback({},
                             buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
-
                     }
 
                     let speechOutput = dev;
@@ -232,8 +231,6 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
                         });
                     }
 
-
-
                 });
 
 
@@ -243,7 +240,6 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
                 console.log("Hello, I can't connect to Amazon Profile Service right now, try again later");
                 callback({},
                     buildSpeechletResponse('cardTitle', 'account error', 'account error', true));
-
             }
         });
     }

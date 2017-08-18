@@ -13,15 +13,19 @@
       "samples": []
     },
     {
-      "name": "FaQToSetSecurityBoot",
+      "name": "TurnOffDisplay",
       "samples": [
-        "how to enable the security boot",
-        "how to enable the security boot on my computer"
+        "turn off",
+        "turn off my display",
+        "turn off the display",
+        "turn off my display for {device}",
+        "turn on {device}",
+        "turn off display for {device}"
       ],
       "slots": [
         {
-          "name": "platform",
-          "type": "platform",
+          "name": "device",
+          "type": "device",
           "samples": []
         }
       ]
@@ -29,34 +33,43 @@
     {
       "name": "TurnOnDisplay",
       "samples": [
+        "turn on my display",
         "turn on the display",
-        "turn on"
+        "turn on",
+        "turn on {device}",
+        "turn on my display for {device}"
       ],
-      "slots": []
+      "slots": [
+        {
+          "name": "device",
+          "type": "device",
+          "samples": []
+        }
+      ]
     }
   ],
   "types": [
     {
-      "name": "platform",
+      "name": "device",
       "values": [
         {
           "id": null,
           "name": {
-            "value": "notebook",
+            "value": "hulk",
             "synonyms": []
           }
         },
         {
           "id": null,
           "name": {
-            "value": "desktop",
+            "value": "iron man",
             "synonyms": []
           }
         },
         {
           "id": null,
           "name": {
-            "value": "netbook",
+            "value": "kitty",
             "synonyms": []
           }
         }
@@ -65,13 +78,24 @@
   ],
   "prompts": [
     {
-      "id": "Elicit.Intent-FaQToSetSecurityBoot.IntentSlot-platform",
+      "id": "Elicit.Intent-TurnOffDisplay.IntentSlot-device",
       "promptVersion": "1.0",
       "definitionVersion": "1.0",
       "variations": [
         {
           "type": "PlainText",
-          "value": "what's your platform"
+          "value": "please tell me which one"
+        }
+      ]
+    },
+    {
+      "id": "Elicit.Intent-TurnOnDisplay.IntentSlot-device",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "please tell me which one"
         }
       ]
     }
@@ -80,17 +104,33 @@
     "version": "1.0",
     "intents": [
       {
-        "name": "FaQToSetSecurityBoot",
+        "name": "TurnOffDisplay",
         "confirmationRequired": false,
         "prompts": {},
         "slots": [
           {
-            "name": "platform",
-            "type": "platform",
+            "name": "device",
+            "type": "device",
             "elicitationRequired": true,
             "confirmationRequired": false,
             "prompts": {
-              "elicit": "Elicit.Intent-FaQToSetSecurityBoot.IntentSlot-platform"
+              "elicit": "Elicit.Intent-TurnOffDisplay.IntentSlot-device"
+            }
+          }
+        ]
+      },
+      {
+        "name": "TurnOnDisplay",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "device",
+            "type": "device",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-TurnOnDisplay.IntentSlot-device"
             }
           }
         ]
