@@ -162,11 +162,12 @@ function handleIntentRequest(intentRequest, session, callback) {
 function findDevice(devs,name){
 
     let sn;
-    devs.every(function (element, index, arr) {
+    devs.some(function (element, index, arr) {
         console.log(element);
         if(element.name === name ){
             console.log(`find ${name}`);
             sn = element.sn;
+            return true;//break the loop
         }
     });
     return sn;

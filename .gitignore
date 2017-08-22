@@ -4,4 +4,6 @@ InteractionModel
 test
 .vscode
 project.json
+config.json
+
 */config.js
