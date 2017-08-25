@@ -160,17 +160,18 @@ function handleIntentRequest(intentRequest, session, callback) {
 }
 
 function findDevice(devs,name){
-
+    console.log(devs);
     let sn;
     devs.forEach(function (element, index, arr) {
         console.log(element);
-        if(element.name === name || element.name.indexOf(name) > -1){
+        if(element.name.toLowerCase() === name.toLowerCase()
+             || element.name.toLowerCase().indexOf(name.toLowerCase()) > -1){
             console.log(`find ${name}`);
             sn = element.sn;
             //return false;//break the loop
         }
     });
-    console.log(`exit findDevice`);
+    console.log(`exit findDevice: ${sn}`);
     return sn;
 
 }
