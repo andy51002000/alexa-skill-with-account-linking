@@ -167,9 +167,10 @@ function findDevice(devs,name){
         if(element.name === name || element.name.indexOf(name) > -1){
             console.log(`find ${name}`);
             sn = element.sn;
-            return false;//break the loop
+            //return false;//break the loop
         }
     });
+    console.log(`exit findDevice`);
     return sn;
 
 }
