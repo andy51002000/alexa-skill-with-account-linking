@@ -4,16 +4,16 @@ var docClient = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' });
 
 
 
-function dbHelper(tableName, queryItem) {
+function dbHelper(tableName) {
     this.tableName = tableName;
-    this.queryItem = queryItem;
+ 
 }
 
-dbHelper.prototype.find = function (callback, queryItem) {
+dbHelper.prototype.find = function (queryHashkey, callback ) {
 
     var params = {
         TableName: this.tableName,
-        Key: { id: queryItem || this.queryItem } 
+        Key: { id: queryHashkey } 
     };
 
     console.log(`Get the answer from database with particular slot`);
@@ -39,7 +39,7 @@ dbHelper.prototype.putItem = function (item) {
 
     var params = {
         TableName: this.tableName,
-        Item: item || this.queryItem
+        Item: item 
     };
 
     docClient.put(params, function (err, data) {

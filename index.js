@@ -164,7 +164,7 @@ function findDevice(devs,name){
     let sn;
     devs.some(function (element, index, arr) {
         console.log(element);
-        if(element.name === name ){
+        if(element.name === name || element.name.indexOf(name) > -1){
             console.log(`find ${name}`);
             sn = element.sn;
             return true;//break the loop
@@ -198,8 +198,8 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
 
                 //query dynamoDb by id to get device
                 var dbhelper = require('./dynamodbHelper');
-                var Users = new dbhelper('Users', queryHashKey);
-                Users.find(function (res) {
+                var Users = new dbhelper('Users');
+                Users.find(queryHashKey, function (res) {
                     console.log('receive:' + JSON.stringify(res));
 
                     // check data
@@ -221,11 +221,13 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
                     let reprompt = dev;
                     console.log(reprompt);
                     if (state === 'on') {
+                        console.log('try turn on')
                         iotHelper.turnOn(dev, function () {
                             callback({},
                                 buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
                         });
                     } else {
+                        console.log('try turn off')
                         iotHelper.turnOff(dev, function () {
                             callback({},
                                 buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
