@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "alexa-iot-helper": "^1.0.1",
     "aws-sdk": "^2.94.0",
     "request": "^2.81.0"
   }

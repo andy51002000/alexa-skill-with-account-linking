@@ -2,6 +2,10 @@
 var dbhelper = require('./dynamodbHelper');
 var iotHelper = require('./awsIoTHelper');
 
+var alexaIotHelper = require('alexa-iot-helper');
+const endpoint = require('./project.json');
+var ctr = new alexaIotHelper(endpoint,'us-east-1');
+
 /**
  * This sample demonstrates a simple skill built with the Amazon Alexa Skills Kit.
  * The Intent Schema, Custom Slots, and Sample Utterances for this skill, as well as
@@ -217,7 +221,7 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
                     if (dev === undefined) {
                         callback({},
                             buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
-                    }
+                    }//END
 
                     let speechOutput = dev;
                     let reprompt = dev;
@@ -229,15 +233,19 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
                                 buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
                         });
                     } else {
-                        console.log('try turn off')
+                        console.log('try turn off')/*
                         iotHelper.turnOff(dev, function () {
+                            callback({},
+                                buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                        });*/
+
+                        ctr.ctrMonitor.turnOff(dev, function () {
                             callback({},
                                 buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
                         });
                     }
 
                 });
-
 
 
             } else {
@@ -250,7 +258,26 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
     }
 
 
+}
 
+function handleIntentRequestMusicControl(state, intentRequest, session, callback) {
+
+    console.log('state:' + intentRequest.dialogState);
+    console.log('intentRequest: ' + JSON.stringify(intentRequest));
+    switch(state){
+
+        case "play":
+            break;
+        case "pause":
+            break;
+        case "next":
+            break;
+        case "pre":
+            break;
+        default:
+            break;
+
+    }
 
 }
 
@@ -291,6 +318,14 @@ function onIntent(intentRequest, session, callback) {
         handleIntentRequestDevControl('on', intentRequest, session, callback);
     } else if (intentName === 'TurnOffDisplay') {
         handleIntentRequestDevControl('off', intentRequest, session, callback);
+    } else if (intentName === 'MusicPlay') {
+        handleIntentRequestMusicControl('play', intentRequest, session, callback);
+    } else if (intentName === 'MusicNext') {
+        handleIntentRequestMusicControl('next', intentRequest, session, callback);
+    } else if (intentName === 'MusicPause') {
+        handleIntentRequestMusicControl('pause', intentRequest, session, callback);
+    } else if (intentName === 'MusicPreviouse') {
+        handleIntentRequestMusicControl('previouse', intentRequest, session, callback);
     }
     else
         handleIntentRequest(intentRequest, session, callback);
