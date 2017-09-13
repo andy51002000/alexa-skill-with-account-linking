@@ -1,10 +1,10 @@
 'use strict';
 var dbhelper = require('./dynamodbHelper');
-var iotHelper = require('./awsIoTHelper');
+//var iotHelper = require('./awsIoTHelper');
 
 var alexaIotHelper = require('alexa-iot-helper');
 const endpoint = require('./project.json');
-var ctr = new alexaIotHelper(endpoint,'us-east-1');
+var iotHelper = new alexaIotHelper(endpoint, 'us-east-1');
 
 /**
  * This sample demonstrates a simple skill built with the Amazon Alexa Skills Kit.
@@ -163,13 +163,13 @@ function handleIntentRequest(intentRequest, session, callback) {
     }
 }
 
-function findDevice(devs,name){
+function findDevice(devs, name) {
     console.log(devs);
     let sn;
     devs.forEach(function (element, index, arr) {
         console.log(element);
-        if(element.name.toLowerCase() === name.toLowerCase()
-             || element.name.toLowerCase().indexOf(name.toLowerCase()) > -1){
+        if (element.name.toLowerCase() === name.toLowerCase()
+            || element.name.toLowerCase().indexOf(name.toLowerCase()) > -1) {
             console.log(`find ${name}`);
             sn = element.sn;
             //return false;//break the loop
@@ -188,74 +188,71 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
 
         callback({}, buildDialogDelegateResponse());
 
-    } else {
+    }//END Dialog
 
-        const devName = intentRequest.intent.slots.device.value;
-        var handler = require('./amazonAccountHelper');
-        handler(session, function (response, body) {
+    const devName = intentRequest.intent.slots.device.value;
+    var handler = require('./amazonAccountHelper');
+    handler(session, function (response, body) {
 
-            if (response.statusCode == 200) {
+        if (response.statusCode !== 200) {
 
-                //get user id
-                var profile = JSON.parse(body);
-                console.log(profile);
-                const queryHashKey = profile.user_id;
-                const cardTitle = intentRequest.intent.name;
+            console.log("Hello, I can't connect to Amazon Profile Service right now, try again later");
+            callback({},
+                buildSpeechletResponse('cardTitle', 'account error', 'account error', true));
 
-                //query dynamoDb by id to get device
-                var dbhelper = require('./dynamodbHelper');
-                var Users = new dbhelper('Users');
-                Users.find(queryHashKey, function (res) {
-                    console.log('receive:' + JSON.stringify(res));
-
-                    // check data
-                    if (isEmpty(res)) {
-                        console.log('empty response');
-                        callback({},
-                            buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
-                        return false;
-                    }
-
-                    //const dev = res.Item.devs instanceof Array ? res.Item.devs[0] : res.Item.devs;
-                    var dev = findDevice(res.Item.devs,devName);
-                    if (dev === undefined) {
-                        callback({},
-                            buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
-                    }//END
-
-                    let speechOutput = dev;
-                    let reprompt = dev;
-                    console.log(reprompt);
-                    if (state === 'on') {
-                        console.log('try turn on')
-                        iotHelper.turnOn(dev, function () {
-                            callback({},
-                                buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
-                        });
-                    } else {
-                        console.log('try turn off')/*
-                        iotHelper.turnOff(dev, function () {
-                            callback({},
-                                buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
-                        });*/
-
-                        ctr.ctrMonitor.turnOff(dev, function () {
-                            callback({},
-                                buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
-                        });
-                    }
-
-                });
+        }//END Dialog
 
 
-            } else {
 
-                console.log("Hello, I can't connect to Amazon Profile Service right now, try again later");
+        //get user id
+        var profile = JSON.parse(body);
+        console.log(profile);
+        const queryHashKey = profile.user_id;
+        const cardTitle = intentRequest.intent.name;
+
+        //query dynamoDb by id to get device
+        var dbhelper = require('./dynamodbHelper');
+        var Users = new dbhelper('Users');
+        Users.find(queryHashKey, function (res) {
+            console.log('receive:' + JSON.stringify(res));
+
+            // check data
+            if (isEmpty(res)) {
+                console.log('empty response');
                 callback({},
-                    buildSpeechletResponse('cardTitle', 'account error', 'account error', true));
+                    buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
+                return false;
             }
+
+            //const dev = res.Item.devs instanceof Array ? res.Item.devs[0] : res.Item.devs;
+            var dev = findDevice(res.Item.devs, devName);
+            if (dev === undefined) {
+                callback({},
+                    buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
+            }//END
+
+            let speechOutput = dev;
+            let reprompt = dev;
+            console.log(reprompt);
+            if (state === 'on') {
+                console.log('try turn on')
+                iotHelper.ctrMonitor.turnOn(dev, function () {
+                    callback({},
+                        buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                });
+            } else {
+                console.log('try turn off')
+
+                iotHelper.ctrMonitor.turnOff(dev, function () {
+                    callback({},
+                        buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                });
+            }
+
         });
-    }
+
+    });
+
 
 
 }
@@ -264,7 +261,7 @@ function handleIntentRequestMusicControl(state, intentRequest, session, callback
 
     console.log('state:' + intentRequest.dialogState);
     console.log('intentRequest: ' + JSON.stringify(intentRequest));
-    switch(state){
+    switch (state) {
 
         case "play":
             break;
