@@ -1,10 +1,20 @@
 'use strict';
-var dbhelper = require('./dynamodbHelper');
-//var iotHelper = require('./awsIoTHelper');
+//require aws sdk
+var AWS = require("aws-sdk");
+AWS.config.loadFromPath('./config.json');
+var docClient = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' });
 
+var dbHelper = require('dynamodb-helper');
+var Users = new dbHelper(docClient, 'Users');
+
+
+//require alexa-iot-helper 
+// and create alexaIotHelper object
 var alexaIotHelper = require('alexa-iot-helper');
-const endpoint = require('./project.json');
-var iotHelper = new alexaIotHelper(endpoint, 'us-east-1');
+//create iotdata object
+const endpoint = require('./iotConfig.json');
+var iotdata = new AWS.IotData(endpoint);
+var iotHelper = new alexaIotHelper(iotdata);
 
 /**
  * This sample demonstrates a simple skill built with the Amazon Alexa Skills Kit.
@@ -119,52 +129,16 @@ function handleSessionEndRequest(callback) {
 
 function handleIntentRequest(intentRequest, session, callback) {
 
-    console.log('state:' + intentRequest.dialogState)
-    console.log('intentRequest: ' + JSON.stringify(intentRequest))
-    if (intentRequest.dialogState !== "COMPLETED") {
+    let speechOutput = 'no match intent';
+    let reprompt = 'no match intent';
+    console.log(reprompt);
+    callback({},
+        buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
 
-        callback({}, buildDialogDelegateResponse());
-
-    } else {
-
-        const slots = intentRequest.intent.slots;
-        let queryHashKey = intentRequest.intent.name;
-
-        if (!isEmpty(slots)) {
-            console.log('check slots');
-            // Need slots
-            if (slots instanceof Array) {
-                slots.forEach(function (element, index, arr) {
-                    let slotsValue = element[Object.keys(element)].value.replace(/ /g, "");
-                    queryHashKey = queryHashKey + `_${slotsValue}`;
-                })
-            }
-            else {
-                let slotsValue = slots[Object.keys(slots)].value;
-                if (slotsValue !== 'undefined') {
-                    queryHashKey = queryHashKey + `_${slotsValue.replace(/ /g, "")}`;
-                }
-            }
-
-            console.log(queryHashKey)
-        }
-
-
-        const cardTitle = intentRequest.intent.name;
-        dbhelper(queryHashKey, function (res) {
-
-            let speechOutput = res;
-            let reprompt = res;
-            console.log(reprompt);
-            //self.emit(':tell',speechOutput, reprompt);
-            callback({},
-                buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
-        })
-    }
 }
 
 function findDevice(devs, name) {
-    console.log(devs);
+    console.log(`dev:${devs} ,request:${name}`);
     let sn;
     devs.forEach(function (element, index, arr) {
         console.log(element);
@@ -187,7 +161,7 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
     if (intentRequest.dialogState !== "COMPLETED") {
 
         callback({}, buildDialogDelegateResponse());
-
+        return;
     }//END Dialog
 
     const devName = intentRequest.intent.slots.device.value;
@@ -199,7 +173,7 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
             console.log("Hello, I can't connect to Amazon Profile Service right now, try again later");
             callback({},
                 buildSpeechletResponse('cardTitle', 'account error', 'account error', true));
-
+            return;
         }//END Dialog
 
 
@@ -211,8 +185,6 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
         const cardTitle = intentRequest.intent.name;
 
         //query dynamoDb by id to get device
-        var dbhelper = require('./dynamodbHelper');
-        var Users = new dbhelper('Users');
         Users.find(queryHashKey, function (res) {
             console.log('receive:' + JSON.stringify(res));
 
@@ -221,7 +193,7 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
                 console.log('empty response');
                 callback({},
                     buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
-                return false;
+                return;
             }
 
             //const dev = res.Item.devs instanceof Array ? res.Item.devs[0] : res.Item.devs;
@@ -229,6 +201,7 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
             if (dev === undefined) {
                 callback({},
                     buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
+                return;
             }//END
 
             let speechOutput = dev;
