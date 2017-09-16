@@ -185,8 +185,8 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
         const cardTitle = intentRequest.intent.name;
 
         //query dynamoDb by id to get device
-        Users.find(queryHashKey, function (res) {
-            console.log('receive:' + JSON.stringify(res));
+        Users.find(queryHashKey, function (err, data) {
+            console.log('receive:' + JSON.stringify(data));
 
             // check data
             if (isEmpty(res)) {

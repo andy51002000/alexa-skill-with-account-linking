@@ -1,12 +1,14 @@
 LAMBDA_FUNCTION_NAME=alexawithiot
 
-arg = $1
-size = ${#arg}
-if [ $size -gt 0 ]
+arg=$1
+argsize=${#arg}
+if [ $argsize -gt 0 ]
 then
-git add -A
-git commit -m "$arg"
-git push -u origin master
+	git checkout master
+	git add -A
+	git commit -m "$arg"
+	git push -u origin master
+	echo "uploading ..."
 fi
 
 rm -f temp
