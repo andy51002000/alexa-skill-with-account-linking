@@ -189,7 +189,7 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
             console.log('receive:' + JSON.stringify(data));
 
             // check data
-            if (isEmpty(res)) {
+            if (isEmpty(data) || err) {
                 console.log('empty response');
                 callback({},
                     buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
@@ -197,7 +197,7 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
             }
 
             //const dev = res.Item.devs instanceof Array ? res.Item.devs[0] : res.Item.devs;
-            var dev = findDevice(res.Item.devs, devName);
+            var dev = findDevice(data.Item.devs, devName);
             if (dev === undefined) {
                 callback({},
                     buildSpeechletResponse(cardTitle, 'I can not find your device', '', true));
@@ -335,17 +335,17 @@ exports.handler = (event, context, callback) => {
         }
 
         if (event.request.type === 'LaunchRequest') {
-            onLaunch(event.request,
-                event.session,
-                (sessionAttributes, speechletResponse) => {
-                    callback(null, buildResponse(sessionAttributes, speechletResponse));
-                });
+            onLaunch(   event.request,
+                        event.session,
+                        (sessionAttributes, speechletResponse) => {
+                            callback(null, buildResponse(sessionAttributes, speechletResponse));  }
+                    );
         } else if (event.request.type === 'IntentRequest') {
-            onIntent(event.request,
-                event.session,
-                (sessionAttributes, speechletResponse) => {
-                    callback(null, buildResponse(sessionAttributes, speechletResponse));
-                });
+            onIntent(   event.request,
+                        event.session,
+                        (sessionAttributes, speechletResponse) => {
+                            callback(null, buildResponse(sessionAttributes, speechletResponse));
+                    });
         } else if (event.request.type === 'SessionEndedRequest') {
             onSessionEnded(event.request, event.session);
             callback();
