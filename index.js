@@ -14,8 +14,8 @@ var alexaIotHelper = require('alexa-iot-helper');
 //create iotdata object
 const endpoint = require('./iotConfig.json');
 var iotdata = new AWS.IotData(endpoint);
-var iotHelper = new alexaIotHelper(iotdata);
-
+var player = new alexaIotHelper.ctrMediaPlayer(iotdata);
+var monitor = new alexaIotHelper.ctrMonitor(iotdata);
 /**
  * This sample demonstrates a simple skill built with the Amazon Alexa Skills Kit.
  * The Intent Schema, Custom Slots, and Sample Utterances for this skill, as well as
@@ -209,14 +209,14 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
             console.log(reprompt);
             if (state === 'on') {
                 console.log('try turn on')
-                iotHelper.ctrMonitor.turnOn(dev, function () {
+                monitor.turnOn(dev, function () {
                     callback({},
                         buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
                 });
             } else {
                 console.log('try turn off')
 
-                iotHelper.ctrMonitor.turnOff(dev, function () {
+                monitor.turnOff(dev, function () {
                     callback({},
                         buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
                 });
