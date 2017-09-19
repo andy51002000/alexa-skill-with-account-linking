@@ -7,13 +7,13 @@ var docClient = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' });
 var dbHelper = require('dynamodb-helper');
 var Users = new dbHelper(docClient, 'Users');
 
+//create iotdata object
+const endpoint = require('./iotConfig.json');
+var iotdata = new AWS.IotData(endpoint);
 
 //require alexa-iot-helper 
 // and create alexaIotHelper object
 var alexaIotHelper = require('alexa-iot-helper');
-//create iotdata object
-const endpoint = require('./iotConfig.json');
-var iotdata = new AWS.IotData(endpoint);
 var player = new alexaIotHelper.ctrMediaPlayer(iotdata);
 var monitor = new alexaIotHelper.ctrMonitor(iotdata);
 /**
@@ -154,7 +154,7 @@ function findDevice(devs, name) {
 
 }
 
-function handleIntentRequestDevControl(state, intentRequest, session, callback) {
+function handleIntentRequestDevControl( intentRequest, session, callback) {
 
     console.log('state:' + intentRequest.dialogState)
     console.log('intentRequest: ' + JSON.stringify(intentRequest))
@@ -182,7 +182,8 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
         var profile = JSON.parse(body);
         console.log(profile);
         const queryHashKey = profile.user_id;
-        const cardTitle = intentRequest.intent.name;
+        const intentName = intentRequest.intent.name;
+        const cardTitle = intentName;
 
         //query dynamoDb by id to get device
         Users.find(queryHashKey, function (err, data) {
@@ -207,6 +208,7 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
             let speechOutput = dev;
             let reprompt = dev;
             console.log(reprompt);
+            /*
             if (state === 'on') {
                 console.log('try turn on')
                 monitor.turnOn(dev, function () {
@@ -221,35 +223,76 @@ function handleIntentRequestDevControl(state, intentRequest, session, callback) 
                         buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
                 });
             }
-
+            */
+            devControl(intentName, dev, callback);    
         });
 
     });
 
-
-
 }
 
-function handleIntentRequestMusicControl(state, intentRequest, session, callback) {
+function devControl(intentName, dev, callback) {
 
-    console.log('state:' + intentRequest.dialogState);
-    console.log('intentRequest: ' + JSON.stringify(intentRequest));
-    switch (state) {
+    let speechOutput = dev;
+    let reprompt = dev;
+    console.log(reprompt);
 
-        case "play":
+    switch (intentName) {
+
+        case "TurnOnDisplay":
+            console.log('try turn on')
+            monitor.turnOn(dev, function () {
+                callback({},
+                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+            });
             break;
-        case "pause":
+        case "TurnOffDisplay":
+            console.log('try turn off')
+
+            monitor.turnOff(dev, function () {
+                callback({},
+                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+            });
             break;
-        case "next":
+        case "MusicPlay":
+            console.log('try music play')
+
+            player.play(dev, function () {
+                callback({},
+                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+            });
             break;
-        case "pre":
+        case "MusicNext":
+            console.log('try music next')
+
+            player.next(dev, function () {
+                callback({},
+                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+            });
+            break;
+        case "MusicPause":
+            console.log('try music pause')
+
+            player.pause(dev, function () {
+                callback({},
+                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+            });
+            break;
+        case "MusicPreviouse":
+            console.log('try music previours')
+
+            player.pre(dev, function () {
+                callback({},
+                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+            });
             break;
         default:
             break;
-
     }
 
 }
+
+
 
 // --------------- Events -----------------------
 
@@ -285,17 +328,17 @@ function onIntent(intentRequest, session, callback) {
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
         handleSessionEndRequest(callback);
     } else if (intentName === 'TurnOnDisplay') {
-        handleIntentRequestDevControl('on', intentRequest, session, callback);
+        handleIntentRequestDevControl( intentRequest, session, callback);
     } else if (intentName === 'TurnOffDisplay') {
-        handleIntentRequestDevControl('off', intentRequest, session, callback);
+        handleIntentRequestDevControl(intentRequest, session, callback);
     } else if (intentName === 'MusicPlay') {
-        handleIntentRequestMusicControl('play', intentRequest, session, callback);
+        handleIntentRequestDevControl(intentRequest, session, callback);
     } else if (intentName === 'MusicNext') {
-        handleIntentRequestMusicControl('next', intentRequest, session, callback);
+        handleIntentRequestDevControl(intentRequest, session, callback);
     } else if (intentName === 'MusicPause') {
-        handleIntentRequestMusicControl('pause', intentRequest, session, callback);
+        handleIntentRequestDevControl(intentRequest, session, callback);
     } else if (intentName === 'MusicPreviouse') {
-        handleIntentRequestMusicControl('previouse', intentRequest, session, callback);
+        handleIntentRequestDevControl( intentRequest, session, callback);
     }
     else
         handleIntentRequest(intentRequest, session, callback);
@@ -335,17 +378,18 @@ exports.handler = (event, context, callback) => {
         }
 
         if (event.request.type === 'LaunchRequest') {
-            onLaunch(   event.request,
-                        event.session,
-                        (sessionAttributes, speechletResponse) => {
-                            callback(null, buildResponse(sessionAttributes, speechletResponse));  }
-                    );
+            onLaunch(event.request,
+                event.session,
+                (sessionAttributes, speechletResponse) => {
+                    callback(null, buildResponse(sessionAttributes, speechletResponse));
+                }
+            );
         } else if (event.request.type === 'IntentRequest') {
-            onIntent(   event.request,
-                        event.session,
-                        (sessionAttributes, speechletResponse) => {
-                            callback(null, buildResponse(sessionAttributes, speechletResponse));
-                    });
+            onIntent(event.request,
+                event.session,
+                (sessionAttributes, speechletResponse) => {
+                    callback(null, buildResponse(sessionAttributes, speechletResponse));
+                });
         } else if (event.request.type === 'SessionEndedRequest') {
             onSessionEnded(event.request, event.session);
             callback();
