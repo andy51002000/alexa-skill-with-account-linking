@@ -243,7 +243,7 @@ function devControl(intentName, dev, callback) {
             console.log('try turn on')
             monitor.turnOn(dev, function () {
                 callback({},
-                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                    buildSpeechletResponse(intentName, speechOutput, reprompt, true));
             });
             break;
         case "TurnOffDisplay":
@@ -251,7 +251,7 @@ function devControl(intentName, dev, callback) {
 
             monitor.turnOff(dev, function () {
                 callback({},
-                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                    buildSpeechletResponse(intentName, speechOutput, reprompt, true));
             });
             break;
         case "MusicPlay":
@@ -259,7 +259,7 @@ function devControl(intentName, dev, callback) {
 
             player.play(dev, function () {
                 callback({},
-                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                    buildSpeechletResponse(intentName, speechOutput, reprompt, true));
             });
             break;
         case "MusicNext":
@@ -267,7 +267,7 @@ function devControl(intentName, dev, callback) {
 
             player.next(dev, function () {
                 callback({},
-                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                    buildSpeechletResponse(intentName, speechOutput, reprompt, true));
             });
             break;
         case "MusicPause":
@@ -275,7 +275,7 @@ function devControl(intentName, dev, callback) {
 
             player.pause(dev, function () {
                 callback({},
-                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                    buildSpeechletResponse(intentName, speechOutput, reprompt, true));
             });
             break;
         case "MusicPreviouse":
@@ -283,7 +283,7 @@ function devControl(intentName, dev, callback) {
 
             player.pre(dev, function () {
                 callback({},
-                    buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
+                    buildSpeechletResponse(intentName, speechOutput, reprompt, true));
             });
             break;
         default:
