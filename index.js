@@ -154,7 +154,7 @@ function findDevice(devs, name) {
 
 }
 
-function handleIntentRequestDevControl( intentRequest, session, callback) {
+function handleIntentRequestDevControl(intentRequest, session, callback) {
 
     console.log('state:' + intentRequest.dialogState)
     console.log('intentRequest: ' + JSON.stringify(intentRequest))
@@ -208,23 +208,7 @@ function handleIntentRequestDevControl( intentRequest, session, callback) {
             let speechOutput = dev;
             let reprompt = dev;
             console.log(reprompt);
-            /*
-            if (state === 'on') {
-                console.log('try turn on')
-                monitor.turnOn(dev, function () {
-                    callback({},
-                        buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
-                });
-            } else {
-                console.log('try turn off')
-
-                monitor.turnOff(dev, function () {
-                    callback({},
-                        buildSpeechletResponse(cardTitle, speechOutput, reprompt, true));
-                });
-            }
-            */
-            devControl(intentName, dev, callback);    
+            devControl(intentName, dev, callback);
         });
 
     });
@@ -286,6 +270,14 @@ function devControl(intentName, dev, callback) {
                     buildSpeechletResponse(intentName, speechOutput, reprompt, true));
             });
             break;
+        case "MusicOpen":
+            console.log('try open media player')
+
+            player.open(dev, function () {
+                callback({},
+                    buildSpeechletResponse(intentName, speechOutput, reprompt, true));
+            });
+            break;
         default:
             break;
     }
@@ -328,7 +320,7 @@ function onIntent(intentRequest, session, callback) {
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
         handleSessionEndRequest(callback);
     } else if (intentName === 'TurnOnDisplay') {
-        handleIntentRequestDevControl( intentRequest, session, callback);
+        handleIntentRequestDevControl(intentRequest, session, callback);
     } else if (intentName === 'TurnOffDisplay') {
         handleIntentRequestDevControl(intentRequest, session, callback);
     } else if (intentName === 'MusicPlay') {
@@ -338,7 +330,9 @@ function onIntent(intentRequest, session, callback) {
     } else if (intentName === 'MusicPause') {
         handleIntentRequestDevControl(intentRequest, session, callback);
     } else if (intentName === 'MusicPreviouse') {
-        handleIntentRequestDevControl( intentRequest, session, callback);
+        handleIntentRequestDevControl(intentRequest, session, callback);
+    } else if (intentName === 'MusicOpen') {
+        handleIntentRequestDevControl(intentRequest, session, callback);
     }
     else
         handleIntentRequest(intentRequest, session, callback);
