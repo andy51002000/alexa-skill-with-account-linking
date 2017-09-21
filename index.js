@@ -217,8 +217,8 @@ function handleIntentRequestDevControl(intentRequest, session, callback) {
 
 function devControl(intentName, dev, callback) {
 
-    let speechOutput = dev;
-    let reprompt = dev;
+    let speechOutput = "okay, just a moment";
+    let reprompt = "okay";
     console.log(reprompt);
 
     switch (intentName) {

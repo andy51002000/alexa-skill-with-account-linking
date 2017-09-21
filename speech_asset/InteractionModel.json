@@ -13,13 +13,91 @@
       "samples": []
     },
     {
+      "name": "MusicNext",
+      "samples": [
+        "play next music for {device}",
+        "play next music on {device}",
+        "next music"
+      ],
+      "slots": [
+        {
+          "name": "device",
+          "type": "device",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "MusicOpen",
+      "samples": [
+        "open media player for {device}",
+        "open media player on {device}"
+      ],
+      "slots": [
+        {
+          "name": "device",
+          "type": "device",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "MusicPause",
+      "samples": [
+        "Pause the music",
+        "pause music for {device}",
+        "pause music on {device}"
+      ],
+      "slots": [
+        {
+          "name": "device",
+          "type": "device",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "MusicPlay",
+      "samples": [
+        "play music",
+        "play music for {device}",
+        "play music on {device}"
+      ],
+      "slots": [
+        {
+          "name": "media",
+          "type": "media",
+          "samples": []
+        },
+        {
+          "name": "device",
+          "type": "device",
+          "samples": []
+        }
+      ]
+    },
+    {
+      "name": "MusicPreviouse",
+      "samples": [
+        "play previous music for {device}",
+        "play previous music on {device}"
+      ],
+      "slots": [
+        {
+          "name": "device",
+          "type": "device",
+          "samples": []
+        }
+      ]
+    },
+    {
       "name": "TurnOffDisplay",
       "samples": [
         "turn off",
         "turn off my display",
         "turn off the display",
         "turn off my display for {device}",
-        "turn on {device}",
+        "turn off {device}",
         "turn off display for {device}"
       ],
       "slots": [
@@ -72,11 +150,92 @@
             "value": "kitty",
             "synonyms": []
           }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "cathy",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "dog",
+            "synonyms": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "media",
+      "values": [
+        {
+          "id": null,
+          "name": {
+            "value": "canon in d",
+            "synonyms": []
+          }
         }
       ]
     }
   ],
   "prompts": [
+    {
+      "id": "Elicit.Intent-MusicNext.IntentSlot-device",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "which one"
+        }
+      ]
+    },
+    {
+      "id": "Elicit.Intent-MusicOpen.IntentSlot-device",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "which one"
+        }
+      ]
+    },
+    {
+      "id": "Elicit.Intent-MusicPause.IntentSlot-device",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "which one"
+        }
+      ]
+    },
+    {
+      "id": "Elicit.Intent-MusicPlay.IntentSlot-device",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "which one"
+        }
+      ]
+    },
+    {
+      "id": "Elicit.Intent-MusicPreviouse.IntentSlot-device",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "which one"
+        }
+      ]
+    },
     {
       "id": "Elicit.Intent-TurnOffDisplay.IntentSlot-device",
       "promptVersion": "1.0",
@@ -103,6 +262,93 @@
   "dialog": {
     "version": "1.0",
     "intents": [
+      {
+        "name": "MusicNext",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "device",
+            "type": "device",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-MusicNext.IntentSlot-device"
+            }
+          }
+        ]
+      },
+      {
+        "name": "MusicOpen",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "device",
+            "type": "device",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-MusicOpen.IntentSlot-device"
+            }
+          }
+        ]
+      },
+      {
+        "name": "MusicPause",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "device",
+            "type": "device",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-MusicPause.IntentSlot-device"
+            }
+          }
+        ]
+      },
+      {
+        "name": "MusicPlay",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "media",
+            "type": "media",
+            "elicitationRequired": false,
+            "confirmationRequired": false,
+            "prompts": {}
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-MusicPlay.IntentSlot-device"
+            }
+          }
+        ]
+      },
+      {
+        "name": "MusicPreviouse",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "device",
+            "type": "device",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-MusicPreviouse.IntentSlot-device"
+            }
+          }
+        ]
+      },
       {
         "name": "TurnOffDisplay",
         "confirmationRequired": false,
