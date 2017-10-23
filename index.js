@@ -16,6 +16,7 @@ var iotdata = new AWS.IotData(endpoint);
 var alexaIotHelper = require('alexa-iot-helper');
 var player = new alexaIotHelper.ctrMediaPlayer(iotdata);
 var monitor = new alexaIotHelper.ctrMonitor(iotdata);
+var mysystem = new alexaIotHelper.ctrSystem(iotdata);
 /**
  * This sample demonstrates a simple skill built with the Amazon Alexa Skills Kit.
  * The Intent Schema, Custom Slots, and Sample Utterances for this skill, as well as
@@ -105,7 +106,7 @@ function getWelcomeResponse(callback) {
     // If we wanted to initialize the session to have some attributes we could add those here.
     const sessionAttributes = {};
     const cardTitle = 'Welcome';
-    const speechOutput = 'Welcome to the Alexa Skills Kit. ' +
+    const speechOutput = 'Hi there! I am Nancy. ' +
         'How can I help you';
     // If the user either does not reply to the welcome message or says something that is not
     // understood, they will be prompted again with this text.
@@ -278,6 +279,13 @@ function devControl(intentName, dev, callback) {
                     buildSpeechletResponse(intentName, speechOutput, reprompt, true));
             });
             break;
+        case "SystemOff":
+            console.log('try remotely shutdown system');
+            mysystem.shutdown(dev, function(){
+                callback({},
+                    buildSpeechletResponse(intentName, speechOutput, reprompt, true));
+            });
+            
         default:
             break;
     }
